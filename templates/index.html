@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AttentionAI | Study Focus Monitor</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #080d18;
+            color: #e8eefc;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 28px;
+            background: #101827;
+            border-bottom: 1px solid #263248;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: #233b60;
+            font-size: 23px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .subtitle {
+            margin: 5px 0 0;
+            color: #8fa2bf;
+            font-size: 12px;
+        }
+
+        .live {
+            color: #55e6a5;
+            font-size: 13px;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: auto;
+            padding: 24px;
+        }
+
+        .page-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .page-heading h2 {
+            margin: 0;
+            font-size: 23px;
+        }
+
+        .page-heading p {
+            color: #8fa2bf;
+            font-size: 13px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.8fr) minmax(300px, 1fr);
+            gap: 20px;
+        }
+
+        .panel {
+            background: #111a2a;
+            border: 1px solid #253149;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 18px;
+            min-width: 0;
+        }
+
+        .panel-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .panel-heading h3 {
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .badge {
+            padding: 6px 10px;
+            background: #1d2b40;
+            color: #a9bddb;
+            border-radius: 8px;
+            font-size: 11px;
+        }
+
+        .webcam-placeholder {
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: #080d18;
+            border: 1px dashed #34435d;
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .camera-icon {
+            font-size: 55px;
+            margin-bottom: 15px;
+        }
+
+        .webcam-placeholder h3 {
+            margin: 0 0 10px;
+        }
+
+        .webcam-placeholder p {
+            max-width: 360px;
+            color: #8fa2bf;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .video-feed {
+            width: 100%;
+            display: block;
+            border-radius: 12px;
+            background: #05070c;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .stat-card {
+            padding: 16px;
+            background: #172236;
+            border: 1px solid #263650;
+            border-radius: 12px;
+            min-width: 0;
+        }
+
+        .stat-label {
+            color: #91a5c4;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .stat-value {
+            font-size: 25px;
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        .stat-description {
+            color: #8295b2;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+
+        .status-panel {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 17px;
+            border: 1px solid #35405a;
+            border-radius: 12px;
+            background: #1a253a;
+            margin-bottom: 16px;
+        }
+
+        .status-icon {
+            font-size: 28px;
+        }
+
+        .status-title {
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .status-description {
+            color: #91a5c4;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        .green {
+            color: #55e6a5;
+        }
+
+        .yellow {
+            color: #ffc857;
+        }
+
+        .red {
+            color: #ff6b81;
+        }
+
+        .meter {
+            height: 8px;
+            background: #27344a;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .meter-fill {
+            height: 100%;
+            width: 0%;
+            background: #55e6a5;
+            transition: width 0.4s;
+        }
+
+        .session-time {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 0;
+            color: #a9bddb;
+            font-size: 13px;
+            border-bottom: 1px solid #253149;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .note {
+            color: #7f91ad;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-top: 15px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #71839f;
+            font-size: 12px;
+        }
+
+        @media (max-width: 850px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 14px;
+            }
+
+            header {
+                padding: 15px;
+            }
+
+            .webcam-placeholder {
+                min-height: 260px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-value {
+                font-size: 19px;
+            }
+        }/* Circular focus gauge */
+.focus-gauge-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.focus-gauge {
+    --focus-angle: 0deg;
+
+    width: 210px;
+    height: 210px;
+    border-radius: 50%;
+
+    display: grid;
+    place-items: center;
+
+    background: conic-gradient(
+        #55e6a5 var(--focus-angle),
+        #27344a var(--focus-angle)
+    );
+
+    transition: background 0.4s ease;
+}
+
+.focus-gauge-inner {
+    width: 174px;
+    height: 174px;
+    border-radius: 50%;
+
+    background: #111a2a;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.focus-gauge-score {
+    font-size: 36px;
+    font-weight: bold;
+    color: #55e6a5;
+}
+
+.focus-gauge-label {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #91a5c4;
+}
+
+.focus-gauge-status {
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: #55e6a5;
+}
+
+
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="brand">
+        <div class="logo">◉</div>
+        <div>
+            <h1>AttentionAI</h1>
+            <p class="subtitle">Smart Study Focus Monitor</p>
+        </div>
+    </div>
+
+    <div class="live">● LIVE MONITORING</div>
+</header>
+
+<main class="container">
+
+    <div class="page-heading">
+        <div>
+            <h2>Study Dashboard</h2>
+            <p>Monitor your study session in real time.</p>
+        </div>
+        <div class="badge">AI MONITORING</div>
+    </div>
+
+    <div class="layout">
+
+        <!-- LEFT: WEBCAM -->
+        <section>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <h3>📹 Live Webcam Feed</h3>
+                    <span class="badge" id="camera-status">Awaiting video</span>
+                </div>
+
+                <div id="camera-placeholder" class="webcam-placeholder">
+                    <div class="camera-icon">📷</div>
+                    <h3>Webcam Feed</h3>
+                    <p>
+                        Your live webcam video will appear here after
+                        we connect the OpenCV camera stream.
+                    </p>
+                    <span class="badge">Camera integration: Next step</span>
+                </div>
+
+                <img
+                  id="webcam-feed"
+                  src="/video_feed"
+                  alt="Live AttentionAI webcam feed"
+                  style="width: 100%; height: 100%; object-fit: contain; display: block;"
+                >
+
+                <p class="note">
+                    Privacy: video processing is performed locally by
+                    your Python application.
+                </p>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <h3>📊 Screen-Facing Score</h3>
+                    <span class="badge">Live measurement</span>
+                </div>
+
+                <div class="stat-value" id="large-focus-score">0.0%</div>
+
+                <div class="meter">
+                    <div class="meter-fill" id="focus-meter"></div>
+                </div>
+
+                <p class="note">
+                    This score measures the proportion of tracked time
+                    your head faces forward. It is not a direct
+                    measurement of concentration.
+                </p>
+            </div>
+
+        </section>
+
+        <!-- RIGHT: LIVE ANALYTICS -->
+        <aside>
+
+            <div class="status-panel">
+                <div class="status-icon" id="status-icon">◉</div>
+                <div>
+                    <div class="status-title" id="focus-status">
+                        Connecting...
+                    </div>
+                    <div class="status-description">
+                        Current head and eye status
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-label">SCREEN-FACING SCORE</div>
+                    <div class="stat-value" id="focus-score">--%</div>
+                    <div class="stat-description">Tracked time</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">BLINK COUNT</div>
+                    <div class="stat-value" id="blink-count">--</div>
+                    <div class="stat-description">Detected blinks</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">EYE STATUS</div>
+                    <div class="stat-value" id="eye-status">--</div>
+                    <div class="stat-description">Current eye state</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">HEAD DIRECTION</div>
+                    <div class="stat-value" id="head-direction">--</div>
+                    <div class="stat-description">Current direction</div>
+                </div>
+                <div class="stat-card">
+                     <div class="stat-label">FOCUSED TIME</div>
+                     <div class="stat-value green" id="focused-time">00:00</div>
+                     <div class="stat-description">Facing the screen</div>
+                </div>
+
+                 <div class="stat-card">
+                    <div class="stat-label">DISTRACTED TIME</div>
+                    <div class="stat-value yellow" id="distracted-time">00:00</div>
+                    <div class="stat-description">Looking away</div>
+                 </div>
+
+                 <div class="stat-card">
+                   <div class="stat-label">DROWSINESS ALERTS</div>
+                   <div class="stat-value red" id="drowsy-count">0</div>
+                   <div class="stat-description">Eye-closure warnings</div>
+                </div>
+
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <h3>⏱️ Study Session</h3>
+                    <span class="badge">Elapsed time</span>
+                </div>
+
+                <div class="session-time" id="session-timer">00:00:00</div>
+
+                <div class="summary-row">
+                    <span>Eye status</span>
+                    <strong id="summary-eye">Waiting</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Head direction</span>
+                    <strong id="summary-head">Waiting</strong>
+                </div>
+
+                <div class="summary-row">
+                <div class="panel">
+    <div class="panel-heading">
+        <h3>🎯 Your Focus Score</h3>
+        <span class="badge">LIVE</span>
+    </div>
+
+    <div class="focus-gauge-container">
+        <div class="focus-gauge" id="focus-gauge">
+            <div class="focus-gauge-inner">
+                <div class="focus-gauge-score" id="large-focus-score">
+                    0.0%
+                </div>
+                <div class="focus-gauge-label">Screen Facing</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="focus-gauge-status" id="gauge-status">
+        Initializing monitor...
+    </div>
+
+    <p class="note">
+        Your score estimates how often your head faces forward.
+        It does not directly measure concentration.
+    </p>
+</div>    
+
+        </aside>
+
+    </div>
+</main>
+
+<footer>
+    AttentionAI · Smart Study Focus Monitor · Local monitoring dashboard
+</footer>
+
+<script>
+    
+let monitoredSeconds = 0;
+let lastTimerUpdate = Date.now();
+
+
+    async function updateDashboard() {
+        try {
+            const response = await fetch("/data");
+
+            if (!response.ok) {
+                throw new Error("Server returned " + response.status);
+            }
+
+            const data = await response.json();
+
+            const score = Number(data.focus_score) || 0;
+            const blinkCount = data.blink_count ?? 0;
+            const eyeStatus = data.eye_status || "Waiting";
+            const direction = data.head_direction || "Waiting";
+            // Read focused time, distracted time, and drowsiness alerts
+            const focusedSeconds = Number(data.focused_time) || 0;
+            const distractedSeconds = Number(data.distracted_time) || 0;
+            const drowsyCount = Number(data.drowsy_count) || 0;
+
+// Convert seconds into MM:SS
+            function formatDuration(totalSeconds) {
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = Math.floor(totalSeconds % 60);
+
+                return (
+                   String(minutes).padStart(2, "0") +
+                   ":" +
+                   String(seconds).padStart(2, "0")
+    );
+}
+
+// Update the dashboard cards
+           document.getElementById("focused-time").textContent =
+             formatDuration(focusedSeconds);
+
+           document.getElementById("distracted-time").textContent =
+             formatDuration(distractedSeconds);
+
+           document.getElementById("drowsy-count").textContent =
+              drowsyCount;
+
+            document.getElementById("focus-score").textContent =
+                score.toFixed(1) + "%";
+
+            document.getElementById("large-focus-score").textContent =
+                score.toFixed(1) + "%";
+
+            const safeScore = Math.max(0, Math.min(100, score));
+
+            document.getElementById("focus-gauge").style.setProperty(
+                 "--focus-angle",
+                 (safeScore * 3.6) + "deg"
+                  );
+
+            const gaugeStatus = document.getElementById("gauge-status");
+
+            if (direction === "Face not detected") {
+               gaugeStatus.textContent = "Face not detected";
+            } else if (direction === "Facing Forward") {
+               gaugeStatus.textContent = "✓ Facing the screen";
+            } else {
+               gaugeStatus.textContent = "↗ Looking away";
+            }
+
+            document.getElementById("blink-count").textContent =
+                blinkCount;
+
+            document.getElementById("eye-status").textContent =
+                eyeStatus;
+
+            document.getElementById("head-direction").textContent =
+                direction;
+
+            document.getElementById("summary-eye").textContent =
+                eyeStatus;
+
+            document.getElementById("summary-head").textContent =
+                direction;
+
+            document.getElementById("summary-focus").textContent =
+                score.toFixed(1) + "%";
+
+            const focusStatus = document.getElementById("focus-status");
+            const statusIcon = document.getElementById("status-icon");
+
+            if (direction === "Face not detected") {
+                focusStatus.textContent = "Face Not Detected";
+                focusStatus.className = "status-title red";
+                statusIcon.textContent = "⚠️";
+            } else if (eyeStatus.includes("WARNING")) {
+                focusStatus.textContent = "Eye Closure Warning";
+                focusStatus.className = "status-title red";
+                statusIcon.textContent = "⚠️";
+            } else if (direction === "Facing Forward") {
+                focusStatus.textContent = "Facing Screen";
+                focusStatus.className = "status-title green";
+                statusIcon.textContent = "✓";
+            } else {
+                focusStatus.textContent = "Looking Away";
+                focusStatus.className = "status-title yellow";
+                statusIcon.textContent = "◉";
+            }
+
+        } catch (error) {
+            document.getElementById("focus-status").textContent =
+                "Connection Error";
+
+            console.error("Could not update dashboard:", error);
+        }
+    }
+
+    
+function updateTimer() {
+    const now = Date.now();
+    const elapsedSeconds = (now - lastTimerUpdate) / 1000;
+    lastTimerUpdate = now;
+
+    // Count time only when the webcam feed is active
+    const webcam = document.getElementById("webcam-feed");
+
+    if (
+        webcam &&
+        webcam.complete &&
+        webcam.naturalWidth > 0 &&
+        webcam.naturalHeight > 0
+    ) {
+        monitoredSeconds += elapsedSeconds;
+    }
+
+    const totalSeconds = Math.floor(monitoredSeconds);
+
+    const hours = String(
+        Math.floor(totalSeconds / 3600)
+    ).padStart(2, "0");
+
+    const minutes = String(
+        Math.floor((totalSeconds % 3600) / 60)
+    ).padStart(2, "0");
+
+    const seconds = String(
+        totalSeconds % 60
+    ).padStart(2, "0");
+
+    document.getElementById("session-timer").textContent =
+        `${hours}:${minutes}:${seconds}`;
+}
+
+    const webcamFeed = document.getElementById("webcam-feed");
+
+    webcamFeed.addEventListener("load", function () {
+        webcamFeed.classList.remove("hidden");
+
+        document.getElementById("camera-placeholder")
+            .classList.add("hidden");
+
+        document.getElementById("camera-status").textContent =
+            "Connected";
+    });
+
+    updateDashboard();
+    updateTimer();
+
+    setInterval(updateDashboard, 1000);
+    setInterval(updateTimer, 1000);
+</script>
+
+</body>
+</html>
